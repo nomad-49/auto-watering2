@@ -1,3 +1,4 @@
+### updated code on the pico :) :) :) :) :)
 import network
 import socket
 import machine
