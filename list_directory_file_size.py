@@ -689,7 +689,7 @@ def main():
                 connection = open_socket(ip)
 
             # Periodically check for updates every 60 minutes
-            if current_time - last_update_check >= 360:
+            if current_time - last_update_check >= 400:
                 fetch_and_update()
                 last_update = load_last_update_date()  # Update the last update date after checking for updates
                 last_update_check = current_time
