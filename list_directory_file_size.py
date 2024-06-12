@@ -1,10 +1,11 @@
-import uos
+# main.py
+import time
 
-# List all files and their sizes
-def list_files():
-    for file in uos.listdir():
-        stats = uos.stat(file)
-        print(f"{file}: {stats[6]} bytes")
+def print_message():
+    message = "Hello from the new main.py!"
+    for i in range(5):
+        print(message)
+        time.sleep(1)
 
-# Call the function to list files
-list_files()
+if __name__ == "__main__":
+    print_message()
