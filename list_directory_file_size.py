@@ -1,4 +1,4 @@
-########### updated code on the pico :) :) :) :) :)
+########### updated code on the pico :) :) :) :) :) llalalal
 import network
 import socket
 import machine
