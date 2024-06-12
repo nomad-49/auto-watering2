@@ -1,4 +1,5 @@
 ########### updated code on the pico :) :) :) :) :) llalalal
+import picozero
 import network
 import socket
 import machine
