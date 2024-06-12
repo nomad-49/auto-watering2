@@ -138,13 +138,13 @@ def connect_wifi():
     wlan.active(True)
     wlan.connect(ssid, password)
     
-    max_wait = 10
+    max_wait = 20
     while max_wait > 0:
         if wlan.status() < 0 or wlan.status() >= 3:
             break
         max_wait -= 1
         print('waiting for connection...')
-        sleep(1)
+        sleep(3)
 
     if wlan.status() != 3:
         raise RuntimeError('network connection failed')
@@ -671,7 +671,7 @@ def main():
                 connection = open_socket(ip)
 
             # Periodically check for updates every 60 minutes
-            if current_time - last_update_check >= 3600:
+            if current_time - last_update_check >= 1800:
                 fetch_and_update()
                 last_update_check = current_time
 
