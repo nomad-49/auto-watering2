@@ -10,6 +10,9 @@ import urequests
 import uos
 import json
 
+# Startup delay to ensure all components are initialized
+sleep(10)
+
 # Wi-Fi credentials
 ssid = 'VM5792329'
 password = 'rk2dqJpcGyjd'
@@ -49,7 +52,7 @@ pump_state = False
 
 # Global variable for software watchdog
 last_check_time = utime.time()
-watchdog_timeout = 180  # 180-second timeout period
+watchdog_timeout = 300  # 300-second timeout period
 
 # Maximum pump activation time and cooldown
 max_pump_time = 60  # 60 seconds
@@ -184,9 +187,9 @@ def webpage(temperature, state, moisture, auto_water, data_points, threshold, la
     data_json = json.dumps(data_points[-60:])  # Keep only the last 60 data points
     led_color = "lightgreen" if state == "ON" else "darkgrey"
     temperature_color = "black"
-    if temperature > 30:
+    if (temperature > 30):
         temperature_color = "#ff6666"  # pastel red
-    elif temperature < 5:
+    elif (temperature < 5):
         temperature_color = "#6666ff"  # pastel blue
 
     html = f"""
@@ -689,7 +692,7 @@ def main():
                 connection = open_socket(ip)
 
             # Periodically check for updates every 60 minutes
-            if current_time - last_update_check >= 30:
+            if current_time - last_update_check >= 20:
                 fetch_and_update()
                 last_update = load_last_update_date()  # Update the last update date after checking for updates
                 last_update_check = current_time
@@ -706,3 +709,4 @@ def main():
 
 # Run the main loop
 main()
+
