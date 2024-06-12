@@ -1,5 +1,4 @@
-########### updated code on the pico :) :) :) :) :) llalalal
-import picozero
+# new update!
 import network
 import socket
 import machine
@@ -18,6 +17,7 @@ password = 'rk2dqJpcGyjd'
 # URL of the raw GitHub file
 url = "https://raw.githubusercontent.com/nomad-49/auto-watering2/main/list_directory_file_size.py"
 local_file = "main.py"
+last_update_file = "last_update.txt"
 
 # Set up the analog pin for the moisture sensor
 moisture_pin = ADC(26)
@@ -134,6 +134,19 @@ def control_led(state):
 def localtime_to_string(time_tuple):
     return "{:02}/{:02}/{} at {:02}:{:02}:{:02}".format(time_tuple[2], time_tuple[1], time_tuple[0], time_tuple[3], time_tuple[4], time_tuple[5])
 
+# Function to save the last update date
+def save_last_update_date():
+    with open(last_update_file, 'w') as f:
+        f.write(localtime_to_string(localtime()))
+
+# Function to load the last update date
+def load_last_update_date():
+    try:
+        with open(last_update_file, 'r') as f:
+            return f.read()
+    except OSError:
+        return "No update recorded"
+
 # Function to connect to the Wi-Fi network
 def connect_wifi():
     wlan = network.WLAN(network.STA_IF)
@@ -166,7 +179,7 @@ def open_socket(ip):
     return connection
 
 # Function to generate the HTML webpage
-def webpage(temperature, state, moisture, auto_water, data_points, threshold):
+def webpage(temperature, state, moisture, auto_water, data_points, threshold, last_update):
     auto_water_status = "ON" if not auto_water else "OFF"
     data_json = json.dumps(data_points[-60:])  # Keep only the last 60 data points
     led_color = "lightgreen" if state == "ON" else "darkgrey"
@@ -428,6 +441,7 @@ def webpage(temperature, state, moisture, auto_water, data_points, threshold):
     <body>
         <h1>Auto Watering System</h1>
         <p id="temperature">{temperature:.1f} &deg;C</p>
+        <p><i>Last Software Update: {last_update}</i></p>
         <div class="control-box">
             <div class="control-title">LED</div>
             <div class="inline-buttons">
@@ -545,6 +559,7 @@ def fetch_and_update():
                 log("Update found. Updating the local file.")
                 with open(local_file, 'wb') as f:
                     f.write(remote_code)
+                save_last_update_date()  # Save the update date
                 log("Restarting the device to run the updated code.")
                 uos.remove(temp_file)  # Remove the temporary file before reset
                 machine.reset()  # Restart the device to run the updated code
@@ -595,6 +610,7 @@ def main():
     state = 'OFF'
     auto_water = False
     wlan = network.WLAN(network.STA_IF)
+    last_update = load_last_update_date()
 
     while True:
         try:
@@ -645,7 +661,7 @@ def main():
                 client.send('Connection: close\r\n\r\n')
                 client.sendall(response.encode('utf-8'))
             else:
-                response = webpage(temperature, state, moisture, auto_water, data_points, moisture_threshold)
+                response = webpage(temperature, state, moisture, auto_water, data_points, moisture_threshold, last_update)
                 client.send(f'HTTP/1.1 {status}\r\n')
                 client.send('Content-Type: text/html\r\n')
                 client.send('Connection: close\r\n\r\n')
@@ -673,8 +689,9 @@ def main():
                 connection = open_socket(ip)
 
             # Periodically check for updates every 60 minutes
-            if current_time - last_update_check >= 1800:
+            if current_time - last_update_check >= 360:
                 fetch_and_update()
+                last_update = load_last_update_date()  # Update the last update date after checking for updates
                 last_update_check = current_time
 
         except Exception as e:
