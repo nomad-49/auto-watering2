@@ -1,3 +1,4 @@
+#here is a change to the code. 
 # Amended wifi settings (removed password from wlan.connect())
 import network
 import socket
