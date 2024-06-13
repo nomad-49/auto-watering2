@@ -1,4 +1,4 @@
-#here is a change to the code. 
+# change dat
 # Amended wifi settings (removed password from wlan.connect())
 import network
 import socket
@@ -182,7 +182,7 @@ def open_socket(ip):
     return connection
 
 # Function to generate the HTML webpage
-def webpage(temperature, state, moisture, auto_water, data_points, threshold, last_update):
+def webpage(temperature, state, moisture, auto_water, data_points, threshold, last_update, last_check):
     auto_water_status = "ON" if not auto_water else "OFF"
     data_json = json.dumps(data_points[-60:])  # Keep only the last 60 data points
     led_color = "lightgreen" if state == "ON" else "darkgrey"
@@ -253,6 +253,10 @@ def webpage(temperature, state, moisture, auto_water, data_points, threshold, la
             }}
             .pump-log {{
                 margin-top: 20px;
+            }}
+            .italic {{
+                font-style: italic;
+                font-size: smaller;
             }}
         </style>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -445,6 +449,7 @@ def webpage(temperature, state, moisture, auto_water, data_points, threshold, la
         <h1>Auto Watering System</h1>
         <p id="temperature">{temperature:.1f} &deg;C</p>
         <p><i>Last Software Update: {last_update}</i></p>
+        <p class="italic">Last Check for Software: {last_check}</p>
         <div class="control-box">
             <div class="control-title">LED</div>
             <div class="inline-buttons">
@@ -533,6 +538,7 @@ def log(message):
 
 # Function to fetch and update code from GitHub
 def fetch_and_update():
+    global last_update_check  # Add this line to update the global last_update_check variable
     temp_file = "temp_main.py"
     try:
         log("Checking for updates.")
@@ -579,6 +585,9 @@ def fetch_and_update():
         except OSError:
             pass
         gc.collect()  # Force garbage collection to free up memory
+
+        # Update the last update check time
+        last_update_check = utime.time()
 
 # Initial check for moisture level and pump activation
 def initial_check():
@@ -664,7 +673,7 @@ def main():
                 client.send('Connection: close\r\n\r\n')
                 client.sendall(response.encode('utf-8'))
             else:
-                response = webpage(temperature, state, moisture, auto_water, data_points, moisture_threshold, last_update)
+                response = webpage(temperature, state, moisture, auto_water, data_points, moisture_threshold, last_update, localtime_to_string(localtime(last_update_check)))
                 client.send(f'HTTP/1.1 {status}\r\n')
                 client.send('Content-Type: text/html\r\n')
                 client.send('Connection: close\r\n\r\n')
@@ -709,3 +718,4 @@ def main():
 
 # Run the main loop
 main()
+
