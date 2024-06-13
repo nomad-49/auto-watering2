@@ -1,4 +1,4 @@
-# new update! :D 
+# Amended wifi settings (removed password from wlan.connect())
 import network
 import socket
 import machine
@@ -11,11 +11,10 @@ import uos
 import json
 
 # Startup delay to ensure all components are initialized
-sleep(10)
+sleep(3)
 
 # Wi-Fi credentials
-ssid = 'VM5792329'
-password = 'rk2dqJpcGyjd'
+ssid = 'WAVLINK_A5C6'
 
 # URL of the raw GitHub file
 url = "https://raw.githubusercontent.com/nomad-49/auto-watering2/main/list_directory_file_size.py"
@@ -154,7 +153,7 @@ def load_last_update_date():
 def connect_wifi():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
-    wlan.connect(ssid, password)
+    wlan.connect(ssid)
     
     max_wait = 20
     while max_wait > 0:
@@ -709,4 +708,3 @@ def main():
 
 # Run the main loop
 main()
-
