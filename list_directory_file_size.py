@@ -1,4 +1,4 @@
-##here is an update for the software.
+#change
 import network
 import socket
 import machine
@@ -9,6 +9,9 @@ import gc
 import urequests
 import uos
 import json
+
+# Add a startup delay
+utime.sleep(5)  # 5-second delay
 
 # Wi-Fi credentials
 ssid = 'VM5792329'
@@ -148,8 +151,7 @@ def connect_wifi():
         sleep(3)
 
     if wlan.status() != 3:
-        print('network connection failed, rebooting...')
-        machine.reset()
+        raise RuntimeError('network connection failed')
     else:
         print('connected')
         status = wlan.ifconfig()
