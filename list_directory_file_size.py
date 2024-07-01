@@ -1,4 +1,3 @@
-#changeee
 import network
 import socket
 import machine
