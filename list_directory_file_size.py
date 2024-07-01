@@ -1,3 +1,4 @@
+#change this
 import network
 import socket
 import machine
@@ -156,6 +157,7 @@ class WebServer:
         self.last_temperature_update = utime.time()
         self.pump_control_override = False
         self.wlan = network.WLAN(network.STA_IF)
+        self.update_message = ""
 
     def open_socket(self, ip):
         address = (ip, 80)
@@ -212,6 +214,7 @@ class WebServer:
                 return '200 OK', pump_log_html
             if request_path.startswith('/update'):
                 update_status = fetch_and_update()
+                self.update_message = update_status
                 response = json.dumps({"message": update_status})
                 return '200 OK', response
         except Exception as e:
@@ -274,7 +277,7 @@ class WebServer:
                     client.send('Connection: close\r\n\r\n')
                     client.sendall(response.encode('utf-8'))
                 else:
-                    response = webpage(temperature, state, moisture, auto_water, self.data_points, self.pump_controller.moisture_threshold)
+                    response = webpage(temperature, state, moisture, auto_water, self.data_points, self.pump_controller.moisture_threshold, self.update_message)
                     client.send(f'HTTP/1.1 {status}\r\n')
                     client.send('Content-Type: text/html\r\n')
                     client.send('Connection: close\r\n\r\n')
