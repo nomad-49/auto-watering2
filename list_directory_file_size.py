@@ -1,4 +1,3 @@
-###Change
 import network
 import socket
 import machine
@@ -321,10 +320,11 @@ def fetch_and_update():
         gc.collect()  # Force garbage collection to free up memory
         response = urequests.get(url)
         if response.status_code == 200:
+            log("Successfully fetched the remote file.")
             # Open a temporary file to write the downloaded content
             with open(temp_file, 'wb') as f:
                 while True:
-                    chunk = response.raw.read(256)  # Read in smaller chunks
+                    chunk = response.raw.read(1024)  # Read in smaller chunks
                     if not chunk:
                         break
                     f.write(chunk)
@@ -348,7 +348,7 @@ def fetch_and_update():
                 uos.remove(temp_file)  # Remove the temporary file before reset
                 machine.reset()  # Restart the device to run the updated code
             else:
-                log("No updates found.")
+                log("No updates found. Local file is up to date.")
                 return "No new software available"
         else:
             log(f"Failed to fetch the file. Status code: {response.status_code}")
